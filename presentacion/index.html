@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Presentación interactiva del taller Git Quest">
+  <title>Git Quest · del primer commit a chained PRs</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <button class="brand" data-go="0" aria-label="Ir al inicio">
+      <span class="brand-mark">GQ</span><span>Git Quest</span>
+    </button>
+    <div class="chapter" id="chapter">Inicio</div>
+    <div class="counter"><span id="current">01</span><i>/</i><span id="total">01</span></div>
+  </header>
+
+  <main id="deck" aria-live="polite">
+    <section class="slide hero active" data-title="Inicio">
+      <div class="eyebrow">Taller práctico · 4 horas</div>
+      <h1>Del primer commit<br><em>a chained PRs</em></h1>
+      <p class="lead">Una aplicación. Siete ramas. Una historia que podemos leer.</p>
+      <div class="hero-graph" aria-hidden="true">
+        <span class="rail"></span>
+        <span class="node n1"></span><span class="node n2"></span>
+        <span class="node n3"></span><span class="node n4"></span>
+        <span class="node n5"></span>
+      </div>
+      <p class="hint">Usa <kbd>→</kbd> para comenzar</p>
+    </section>
+
+    <section class="slide" data-title="La misión">
+      <div class="eyebrow">La misión</div>
+      <h2>No memorices comandos.<br><em>Aprende a leer el estado.</em></h2>
+      <div class="three-up">
+        <article><b>01</b><h3>Observar</h3><p>status, diff y log antes de actuar.</p></article>
+        <article><b>02</b><h3>Decidir</h3><p>qué cambio pertenece a qué historia.</p></article>
+        <article><b>03</b><h3>Colaborar</h3><p>hacer visible el contexto para otros.</p></article>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Mapa">
+      <div class="eyebrow">Nuestro recorrido</div>
+      <h2>Cuatro actos, <em>un solo producto</em></h2>
+      <ol class="route">
+        <li><span>01</span><b>Snapshots</b><small>add · commit · amend</small></li>
+        <li><span>02</span><b>Ramas</b><small>features · referencias</small></li>
+        <li><span>03</span><b>Historias</b><small>merge · rebase · conflictos</small></li>
+        <li><span>04</span><b>Colaboración</b><small>fork · PR · review · stack</small></li>
+      </ol>
+    </section>
+
+    <section class="slide" data-title="Git ≠ GitHub">
+      <div class="eyebrow">Modelo mental</div>
+      <h2>Git vive localmente.<br><em>GitHub conecta equipos.</em></h2>
+      <div class="compare">
+        <article class="git-card"><span>GIT</span><h3>Historia</h3><p>Commits, ramas, merges, tags y referencias en tu máquina.</p></article>
+        <div class="not-equal">≠</div>
+        <article class="hub-card"><span>GITHUB</span><h3>Conversación</h3><p>Forks, issues, Pull Requests, reviews y políticas.</p></article>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Los tres estados">
+      <div class="eyebrow">El primer superpoder</div>
+      <h2>Elegir qué entra <em>en la foto</em></h2>
+      <div class="state-machine" id="stateMachine">
+        <button class="state active" data-state="0"><span>01</span><b>Working tree</b><small>editas</small></button>
+        <div class="arrow">→<code>git add</code></div>
+        <button class="state" data-state="1"><span>02</span><b>Staging</b><small>seleccionas</small></button>
+        <div class="arrow">→<code>git commit</code></div>
+        <button class="state" data-state="2"><span>03</span><b>Historial</b><small>registras</small></button>
+      </div>
+      <div class="terminal" id="stateOutput"><span>$</span> git status<br><strong>modified: equipo.txt</strong></div>
+    </section>
+
+    <section class="slide" data-title="Primer commit">
+      <div class="eyebrow">Hazlo</div>
+      <h2>Tu primer <em>snapshot</em></h2>
+      <pre class="terminal big"><button class="copy" aria-label="Copiar comando">copiar</button><code>printf "Daniel y Ada\n" &gt; equipo.txt
+git status
+git add equipo.txt
+git commit -m "Agregar equipo"</code></pre>
+      <div class="question"><span>Pregunta</span> ¿Commit guarda automáticamente todos tus archivos?</div>
+    </section>
+
+    <section class="slide" data-title="Amend">
+      <div class="eyebrow">Cambiar el pasado cercano</div>
+      <h2>Mismo propósito.<br><em>Nuevo commit, nuevo SHA.</em></h2>
+      <div class="sha-swap">
+        <div><small>ANTES</small><code>3a821fd</code></div>
+        <span>amend</span>
+        <div><small>DESPUÉS</small><code>e790b44</code></div>
+      </div>
+      <pre class="terminal"><code>git add equipo.txt
+      <p class="warning">No reescribas sin coordinación commits que otros ya descargaron.</p>
+    </section>
+
+    <section class="slide" data-title="Conventional Commits">
+      <div class="eyebrow">Mensajes útiles</div>
+      <h2>El historial también es <em>interfaz</em></h2>
+      <div class="commit-builder">
+        <button data-prefix="feat" class="selected">feat</button><button data-prefix="fix">fix</button>
+        <button data-prefix="docs">docs</button><button data-prefix="refactor">refactor</button>
+        <div><code id="commitExample">feat: agregar marcador</code></div>
+      </div>
+      <p class="caption">Describe intención, no los archivos que tocaste.</p>
+    </section>
+
+    <section class="slide" data-title="Referencias">
+      <div class="eyebrow">Nada flota solo</div>
+      <h2>Todo apunta <em>a un commit</em></h2>
+      <div class="ref-grid">
+        <div><code>HEAD</code><p>posición actual</p></div><div><code>HEAD~1</code><p>commit padre</p></div>
+        <div><code>main</code><p>rama local</p></div><div><code>origin/main</code><p>estado remoto conocido</p></div>
+        <div><code>a1b2c3d</code><p>SHA abreviado</p></div><div><code>Closes #1</code><p>issue relacionado</p></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Verified">
+      <div class="eyebrow">Solo teoría</div>
+      <h2>Verified dice <em>quién firmó</em>,<br>no si el código está bien.</h2>
+      <div class="verified"><span>✓</span><div><b>Verified</b><small>Firma criptográfica validada</small></div></div>
+      <p class="caption">GPG · SSH · S/MIME. Identidad y procedencia, no calidad.</p>
+    </section>
+
+    <section class="slide" data-title="Ramas">
+      <div class="eyebrow">Acto 2</div>
+      <h2>Una rama es una <em>línea de intención</em></h2>
+      <div class="branch-stage" aria-label="Grafo de ramas">
+        <div class="branch mainline"><i></i><i></i><i></i><i></i></div>
+        <div class="branch featureline"><i></i><i></i></div>
+        <code class="label-main">main</code><code class="label-feature">feat/menu</code>
+      </div>
+      <p class="caption">Puede contener uno, dos o veinte commits coherentes.</p>
+    </section>
+
+    <section class="slide" data-title="Evolución">
+      <div class="eyebrow">La aplicación crece</div>
+      <h2>Siete cambios, <em>siete diffs pequeños</em></h2>
+      <div class="steps">
+        <span class="done">menu</span><span>loop</span><span>computer</span><span>rules</span>
+        <span>validation</span><span>score</span><span>refactor</span>
+      </div>
+      <pre class="terminal"><code>git switch step/01-menu
+    </section>
+
+    <section class="slide" data-title="Leer el grafo">
+      <div class="eyebrow">Antes de integrar</div>
+      <h2>Dibuja la historia <em>que tienes</em></h2>
+      <pre class="terminal big"><code>git log --oneline --graph --decorate --all</code></pre>
+      <div class="mini-graph"><code>* 81a3 score</code><code>* 7be2 rules</code><code>| * 9d14 menu fix</code><code>|/</code><code>* c421 main</code></div>
+    </section>
+
+    <section class="slide" data-title="Merge">
+      <div class="eyebrow">Dos historias se encuentran</div>
+      <h2>Merge conserva <em>la bifurcación</em></h2>
+      <div class="graph-compare">
+        <div><small>FAST-FORWARD</small><div class="ascii">A──B──C──D</div></div>
+        <div><small>MERGE COMMIT</small><div class="ascii">A──B────M<br>　 ╲　╱<br>　　C──D</div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Rebase">
+      <div class="eyebrow">Reproducir el trabajo</div>
+      <h2>Rebase cambia la base<br><em>y cambia los SHA</em></h2>
+      <div class="rebase-demo" id="rebaseDemo">
+        <button>Reproducir rebase</button>
+        <div class="rebase-track"><span>A</span><span>B</span><span class="old">C</span><span class="old">D</span><span class="new">C′</span><span class="new">D′</span></div>
+      </div>
+      <p class="warning">No rebasees sin acuerdo una rama compartida.</p>
+    </section>
+
+    <section class="slide" data-title="Conflictos">
+      <div class="eyebrow">Git se detiene correctamente</div>
+      <h2>Un conflicto es <em>una decisión humana</em></h2>
+      <div class="conflict" id="conflict">
+        <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code>
+        <button data-choice="Jugador eligió: Piedra">Jugador eligió: Piedra</button>
+        <code>=======</code>
+        <button data-choice="Tu jugada fue: Piedra">Tu jugada fue: Piedra</button>
+        <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt; incoming</code>
+      </div>
+      <div class="resolution" id="resolution">Elige el texto que comunica mejor la intención.</div>
+    </section>
+
+    <section class="slide" data-title="Remotes">
+      <div class="eyebrow">Acto 4</div>
+      <h2>Tres copias, <em>dos remotes</em></h2>
+      <div class="remote-map">
+        <div><small>ORIGINAL</small><b>upstream</b><code>daniel-baf/REPO</code></div>
+        <span>fork ↓</span>
+        <div><small>TU FORK</small><b>origin</b><code>TU_USUARIO/REPO</code></div>
+        <span>clone ↕ push</span>
+        <div><small>TU EQUIPO</small><b>local</b><code>.git</code></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Fetch vs pull">
+      <div class="eyebrow">Primero observa</div>
+      <h2>Fetch informa.<br><em>Pull también integra.</em></h2>
+      <div class="two-up">
+        <article><code>git fetch</code><p>Descarga objetos y actualiza referencias remotas. No toca tus archivos.</p></article>
+        <article><code>git pull</code><p>Ejecuta fetch y después merge o rebase según configuración.</p></article>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Pull Request">
+      <div class="eyebrow">Una propuesta, no una orden</div>
+      <h2>La PR convierte un diff<br><em>en conversación</em></h2>
+      <div class="pr-flow"><span>branch</span><i>→</i><span>push</span><i>→</i><span>PR</span><i>→</i><span>review</span><i>→</i><span>merge</span></div>
+      <pre class="terminal"><code>git push -u origin practica/nombre-equipo</code></pre>
+    </section>
+
+    <section class="slide" data-title="Code review">
+      <div class="eyebrow">Revisar es colaborar</div>
+      <h2>Señala impacto.<br><em>Propón una acción.</em></h2>
+      <div class="review-cards">
+        <article><span>COMMENT</span><p>Pregunta o nota. No emite veredicto.</p></article>
+        <article><span>APPROVE</span><p>La propuesta puede integrarse.</p></article>
+        <article class="request"><span>REQUEST CHANGES</span><p>Hay que corregir antes de integrar.</p></article>
+      </div>
+    </section>
+
+    <section class="slide" data-title="Strategies">
+      <div class="eyebrow">Tres finales posibles</div>
+      <h2>La estrategia expresa <em>una política</em></h2>
+      <div class="strategy-tabs" id="strategyTabs">
+        <button class="active" data-strategy="merge">Merge commit</button>
+        <button data-strategy="squash">Squash</button>
+        <button data-strategy="rebase">Rebase merge</button>
+      </div>
+      <div class="strategy-output" id="strategyOutput"><b>Conserva topología</b><p>Mantiene commits y agrega un commit con dos padres.</p></div>
+    </section>
+
+    <section class="slide" data-title="Chained PRs">
+      <div class="eyebrow">La corona</div>
+      <h2>Revisar una montaña<br><em>como siete colinas</em></h2>
+      <div class="stack">
+        <div><span>7/7</span>refactor <small>→ score</small></div>
+        <div><span>6/7</span>score <small>→ validation</small></div>
+        <div><span>5/7</span>validation <small>→ rules</small></div>
+        <div><span>4/7</span>rules <small>→ computer</small></div>
+        <div><span>3/7</span>computer <small>→ loop</small></div>
+        <div><span>2/7</span>loop <small>→ menu</small></div>
+        <div><span>1/7</span>menu <small>→ main</small></div>
+      </div>
+    </section>
+
+    <section class="slide" data-title="La trampa">
+      <div class="eyebrow danger">La trampa del squash</div>
+      <h2>Contenido igual.<br><em>Identidad diferente.</em></h2>
+      <div class="trap">
+        <div><small>RAMA ORIGINAL</small><code>A──B──C</code></div>
+        <span>squash ↓</span>
+        <div><small>MAIN</small><code>A────S</code></div>
+      </div>
+      <p>Las ramas superiores siguen dependiendo de B y C. Hay que hacer <b>restack</b>.</p>
+      <pre class="terminal"><code>git push --force-with-lease</code></pre>
+    </section>
+
+    <section class="slide" data-title="Después">
+      <div class="eyebrow">Investiga después</div>
+      <h2>El mapa continúa</h2>
+      <div class="research">
+        <div><code>cherry-pick</code><span>un cambio puntual</span></div>
+        <div><code>worktree</code><span>varias ramas abiertas</span></div>
+        <div><code>blame</code><span>contexto por línea</span></div>
+        <div><code>bisect</code><span>búsqueda binaria</span></div>
+        <div><code>.gitignore</code><span>qué no empezar a seguir</span></div>
+      </div>
+    </section>
+
+    <section class="slide finale" data-title="Cierre">
+      <div class="eyebrow">Cuando algo no cuadre</div>
+      <h2>Detente.<br><em>Lee el estado.</em><br>Dibuja el grafo.</h2>
+      <pre class="terminal"><code>git status
+      <p class="lead">La historia también es parte del producto.</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="progress"><span id="progress"></span></div>
+    <button id="prev" aria-label="Diapositiva anterior">←</button>
+    <button id="overview" aria-label="Vista general">⊞</button>
+    <button id="next" aria-label="Diapositiva siguiente">→</button>
+  </footer>
+
+  <dialog id="overviewDialog">
+    <div class="dialog-head"><b>Mapa del taller</b><button id="closeOverview">×</button></div>
+    <div id="overviewGrid" class="overview-grid"></div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
